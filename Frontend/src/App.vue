@@ -36,7 +36,7 @@
 <script>
 import axios from 'axios';
 
-const API = "COLE_SEU_LINK_RENDER_AQUI";
+const API = "https://clinica-app-vutp.onrender.com";
 
 export default {
   data() {
