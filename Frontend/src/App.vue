@@ -56,9 +56,9 @@ export default {
       logado: false,
       nome: '',
       data: '',
-      consultas: []
       cpf: '',
-      hora: '', []
+      hora:'',
+      consultas: []
     }
   },
   methods: {
