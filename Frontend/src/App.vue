@@ -6,8 +6,10 @@
 
       <!-- LOGIN -->
       <div v-if="!logado" class="login">
-        <input v-model="email" placeholder="Email" />
-        <input v-model="senha" type="password" placeholder="Senha" />
+        <input v-model="nome" placeholder="Nome do paciente" />
+        <input v-model="cpf" placeholder="CPF" />
+        <input v-model="data" type="date" />
+        <input v-model="hora" type="time" />
         <button @click="login">Entrar</button>
       </div>
 
@@ -26,8 +28,9 @@
           <h3>Consultas Agendadas</h3>
           <ul>
             <li v-for="c in consultas" :key="c.data">
-              <strong>{{ c.nome }}</strong>
-              <span>{{ c.data }}</span>
+              <strong>{{ c.nome }}</strong><br>
+              <span>{{ c.data }} às {{ c.hora }}</span><br>
+              <small>CPF: {{ c.cpf }}</small>
             </li>
           </ul>
         </div>
@@ -54,6 +57,8 @@ export default {
       nome: '',
       data: '',
       consultas: []
+      cpf: '',
+      hora: '', []
     }
   },
   methods: {
@@ -82,7 +87,9 @@ export default {
     async agendar() {
       await axios.post(`${API}/agendar`, {
         nome: this.nome,
-        data: this.data
+        data: this.data,
+        hora: this.hora,
+        cpf: this.cpf
       });
 
       this.nome = '';
