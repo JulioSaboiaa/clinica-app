@@ -1,30 +1,40 @@
 <template>
-  <div style="text-align:center; margin-top:50px;">
-    
-    <h1>Sistema Clínica</h1>
+  <div class="container">
 
-    <div v-if="!logado">
-      <input v-model="email" placeholder="Email" />
-      <input v-model="senha" placeholder="Senha" type="password" />
-      <br><br>
-      <button @click="login">Entrar</button>
-    </div>
+    <div class="card">
+      <h1>Sistema Clínica</h1>
 
-    <div v-else>
-      <h3>Bem-vindo!</h3>
+      <!-- LOGIN -->
+      <div v-if="!logado" class="login">
+        <input v-model="email" placeholder="Email" />
+        <input v-model="senha" type="password" placeholder="Senha" />
+        <button @click="login">Entrar</button>
+      </div>
 
-      <h3>Agendar Consulta</h3>
-      <input v-model="nome" placeholder="Nome" />
-      <input v-model="data" type="date" />
-      <br><br>
-      <button @click="agendar">Agendar</button>
+      <!-- SISTEMA -->
+      <div v-else>
+        <h2>Bem-vindo 👋</h2>
 
-      <h3>Consultas</h3>
-      <ul>
-        <li v-for="c in consultas" :key="c.data">
-          {{ c.nome }} - {{ c.data }}
-        </li>
-      </ul>
+        <div class="agendamento">
+          <h3>Agendar Consulta</h3>
+          <input v-model="nome" placeholder="Nome do paciente" />
+          <input v-model="data" type="date" />
+          <button @click="agendar">Agendar</button>
+        </div>
+
+        <div class="lista">
+          <h3>Consultas Agendadas</h3>
+          <ul>
+            <li v-for="c in consultas" :key="c.data">
+              <strong>{{ c.nome }}</strong>
+              <span>{{ c.data }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <button class="logout" @click="logout">Sair</button>
+      </div>
+
     </div>
 
   </div>
@@ -41,7 +51,6 @@ export default {
       email: '',
       senha: '',
       logado: false,
-      mensagem: '',
       nome: '',
       data: '',
       consultas: []
@@ -59,30 +68,26 @@ export default {
           this.logado = true;
           this.carregarConsultas();
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
         alert("Login inválido");
       }
     },
 
-    async testar() {
-      const res = await axios.get(API);
-      this.mensagem = res.data;
+    logout() {
+      this.logado = false;
+      this.email = '';
+      this.senha = '';
     },
 
     async agendar() {
-      try {
-        await axios.post(`${API}/agendar`, {
-          nome: this.nome,
-          data: this.data
-        });
+      await axios.post(`${API}/agendar`, {
+        nome: this.nome,
+        data: this.data
+      });
 
-        this.nome = '';
-        this.data = '';
-        this.carregarConsultas();
-      } catch (err) {
-        alert("Erro ao agendar");
-      }
+      this.nome = '';
+      this.data = '';
+      this.carregarConsultas();
     },
 
     async carregarConsultas() {
@@ -92,3 +97,79 @@ export default {
   }
 }
 </script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: white;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 12px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #3b82f6;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+.lista ul {
+  list-style: none;
+  padding: 0;
+}
+
+.lista li {
+  background: #334155;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logout {
+  margin-top: 20px;
+  background: #ef4444;
+}
+
+.logout:hover {
+  background: #dc2626;
+}
+</style>
