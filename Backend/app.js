@@ -27,6 +27,8 @@ app.get('/', (req, res) => {
 // LOGIN
 // ==========================
 app.post('/login', (req, res) => {
+  console.log(req.body); // 👈 adiciona isso
+
   const { email, senha } = req.body;
 
   if (email === "admin@test.com" && senha === "123456") {
