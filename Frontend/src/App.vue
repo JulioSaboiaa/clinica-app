@@ -13,9 +13,6 @@
     <div v-else>
       <h3>Bem-vindo!</h3>
 
-      <button @click="testar">Testar API</button>
-      <p>{{ mensagem }}</p>
-
       <h3>Agendar Consulta</h3>
       <input v-model="nome" placeholder="Nome" />
       <input v-model="data" type="date" />
