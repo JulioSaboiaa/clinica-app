@@ -5,11 +5,9 @@
       <h1>Sistema Clínica</h1>
 
       <!-- LOGIN -->
-      <div v-if="!logado" class="login">
-        <input v-model="nome" placeholder="Nome do paciente" />
-        <input v-model="cpf" placeholder="CPF" />
-        <input v-model="data" type="date" />
-        <input v-model="hora" type="time" />
+      <div v-if="!logado">
+        <input v-model="email" placeholder="Email" />
+        <input v-model="senha" type="password" placeholder="Senha" />
         <button @click="login">Entrar</button>
       </div>
 
@@ -20,14 +18,16 @@
         <div class="agendamento">
           <h3>Agendar Consulta</h3>
           <input v-model="nome" placeholder="Nome do paciente" />
+          <input v-model="cpf" placeholder="CPF" />
           <input v-model="data" type="date" />
+          <input v-model="hora" type="time" />
           <button @click="agendar">Agendar</button>
         </div>
 
         <div class="lista">
-          <h3>Consultas Agendadas</h3>
+          <h3>Consultas</h3>
           <ul>
-            <li v-for="c in consultas" :key="c.data">
+            <li v-for="c in consultas" :key="c.data + c.hora">
               <strong>{{ c.nome }}</strong><br>
               <span>{{ c.data }} às {{ c.hora }}</span><br>
               <small>CPF: {{ c.cpf }}</small>
@@ -55,12 +55,21 @@ export default {
       senha: '',
       logado: false,
       nome: '',
-      data: '',
       cpf: '',
-      hora:'',
+      data: '',
+      hora: '',
       consultas: []
     }
   },
+
+  mounted() {
+    const logado = localStorage.getItem('logado');
+    if (logado) {
+      this.logado = true;
+      this.carregarConsultas();
+    }
+  },
+
   methods: {
     async login() {
       try {
@@ -70,6 +79,7 @@ export default {
         });
 
         if (res.data.token) {
+          localStorage.setItem('logado', 'true');
           this.logado = true;
           this.carregarConsultas();
         }
@@ -79,22 +89,28 @@ export default {
     },
 
     logout() {
+      localStorage.removeItem('logado');
       this.logado = false;
-      this.email = '';
-      this.senha = '';
     },
 
     async agendar() {
-      await axios.post(`${API}/agendar`, {
-        nome: this.nome,
-        data: this.data,
-        hora: this.hora,
-        cpf: this.cpf
-      });
+      try {
+        await axios.post(`${API}/agendar`, {
+          nome: this.nome,
+          cpf: this.cpf,
+          data: this.data,
+          hora: this.hora
+        });
 
-      this.nome = '';
-      this.data = '';
-      this.carregarConsultas();
+        this.nome = '';
+        this.cpf = '';
+        this.data = '';
+        this.hora = '';
+
+        this.carregarConsultas();
+      } catch (err) {
+        alert("Erro ao agendar");
+      }
     },
 
     async carregarConsultas() {
@@ -108,7 +124,7 @@ export default {
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background: linear-gradient(135deg, #1e293b, #0f172a);
   color: white;
 }
@@ -126,11 +142,6 @@ body {
   border-radius: 12px;
   width: 350px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-h1 {
-  margin-bottom: 20px;
 }
 
 input {
@@ -145,21 +156,10 @@ button {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
+  background: #3b82f6;
   border: none;
   border-radius: 6px;
-  background: #3b82f6;
   color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #2563eb;
-}
-
-.lista ul {
-  list-style: none;
-  padding: 0;
 }
 
 .lista li {
@@ -167,16 +167,10 @@ button:hover {
   margin: 5px 0;
   padding: 10px;
   border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
 }
 
 .logout {
-  margin-top: 20px;
+  margin-top: 15px;
   background: #ef4444;
-}
-
-.logout:hover {
-  background: #dc2626;
 }
 </style>
