@@ -54,15 +54,16 @@ export default {
     async login() {
       try {
         const res = await axios.post(`${API}/login`, {
-          email: this.email,
-          senha: this.senha
+          email: this.email.trim(),
+          senha: this.senha.trim()
         });
 
         if (res.data.token) {
           this.logado = true;
           this.carregarConsultas();
         }
-      } catch {
+      } catch (err) {
+        console.error(err);
         alert("Login inválido");
       }
     },
@@ -73,12 +74,18 @@ export default {
     },
 
     async agendar() {
-      await axios.post(`${API}/agendar`, {
-        nome: this.nome,
-        data: this.data
-      });
+      try {
+        await axios.post(`${API}/agendar`, {
+          nome: this.nome,
+          data: this.data
+        });
 
-      this.carregarConsultas();
+        this.nome = '';
+        this.data = '';
+        this.carregarConsultas();
+      } catch (err) {
+        alert("Erro ao agendar");
+      }
     },
 
     async carregarConsultas() {
